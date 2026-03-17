@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Witherwild — GM Brainstorm Codex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1510;
+    --parchment: #f2e8d5;
+    --parchment-dark: #e8d9be;
+    --parchment-deep: #d4c4a0;
+    --moss: #2d4a2d;
+    --moss-light: #3d6b3d;
+    --moss-pale: #4a7c4a;
+    --ash: #6b5d4f;
+    --ash-light: #9c8b78;
+    --rust: #8b3a2a;
+    --rust-light: #b54e38;
+    --gold: #c8962a;
+    --gold-light: #e0ae40;
+    --shadow: rgba(20, 12, 5, 0.5);
+    --glow: rgba(200, 150, 42, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #0e0b08;
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Atmospheric background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(45, 74, 45, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(139, 58, 42, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(200, 150, 42, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(180deg, #0e0b08 0%, #1a1208 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(200, 150, 42, 0.2);
+    flex-shrink: 0;
+  }
+
+  .header-sigil {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(200, 150, 42, 0.6));
+  }
+
+  .header-text h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 20px rgba(200, 150, 42, 0.5);
+    line-height: 1.1;
+  }
+
+  .header-text p {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: var(--ash-light);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* MAIN LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, #13100c 0%, #0f0d09 100%);
+    border-right: 1px solid rgba(200, 150, 42, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .btn-add-context {
+    background: rgba(45, 74, 45, 0.4);
+    border: 1px solid var(--moss-light);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-add-context:hover {
+    background: rgba(45, 74, 45, 0.7);
+    border-color: var(--moss-pale);
+  }
+
+  .context-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ash) transparent;
+  }
+
+  .context-list::-webkit-scrollbar { width: 4px; }
+  .context-list::-webkit-scrollbar-track { background: transparent; }
+  .context-list::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 2px; }
+
+  .context-filter-bar {
+    padding: 8px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.15);
+  }
+
+  .filter-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    border: 1px solid rgba(200, 150, 42, 0.18);
+    background: transparent;
+    color: var(--ash-light);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover {
+    color: var(--parchment);
+    border-color: rgba(200, 150, 42, 0.35);
+  }
+
+  .filter-btn.active {
+    background: rgba(200, 150, 42, 0.12);
+    border-color: rgba(200, 150, 42, 0.45);
+    color: var(--gold-light);
+  }
+
+
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ash);
+    text-align: center;
+    padding: 30px 16px;
+    line-height: 1.6;
+  }
+
+  .context-tag {
+    font-size: 8px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+
+  .tag-npc { background: rgba(139, 58, 42, 0.3); color: #e08070; border: 1px solid rgba(139, 58, 42, 0.5); }
+  .tag-faction { background: rgba(45, 74, 45, 0.3); color: #80b080; border: 1px solid rgba(45, 74, 45, 0.5); }
+  .tag-location { background: rgba(60, 50, 100, 0.3); color: #9090d0; border: 1px solid rgba(60, 50, 100, 0.5); }
+  .tag-lore { background: rgba(200, 150, 42, 0.2); color: #d4a840; border: 1px solid rgba(200, 150, 42, 0.4); }
+  .tag-quest { background: rgba(100, 60, 20, 0.3); color: #c0905a; border: 1px solid rgba(100, 60, 20, 0.5); }
+  .tag-other { background: rgba(80, 80, 80, 0.3); color: #aaa; border: 1px solid rgba(80, 80, 80, 0.5); }
+
+  .context-entry {
+    background: rgba(242, 232, 213, 0.04);
+    border: 1px solid rgba(200, 150, 42, 0.12);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .context-entry:hover {
+    background: rgba(242, 232, 213, 0.08);
+    border-color: rgba(200, 150, 42, 0.25);
+  }
+
+  .context-entry h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--parchment);
+    margin-bottom: 4px;
+  }
+
+  .context-entry p {
+    font-size: 12px;
+    color: var(--ash-light);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .context-entry-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .btn-entry-action {
+    font-size: 10px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .btn-edit { color: var(--ash-light); border-color: rgba(155, 139, 120, 0.3); }
+  .btn-edit:hover { background: rgba(155, 139, 120, 0.1); }
+  .btn-delete { color: var(--rust-light); border-color: rgba(139, 58, 42, 0.3); }
+  .btn-delete:hover { background: rgba(139, 58, 42, 0.15); }
+
+  /* MAIN CONTENT */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient(160deg, #16120e 0%, #12100c 100%);
+  }
+
+  /* MODE SELECTOR */
+  .mode-bar {
+    padding: 16px 24px 0;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.15);
+    flex-shrink: 0;
+  }
+
+  .mode-bar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ash);
+    margin-bottom: 10px;
+  }
+
+  .mode-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 0;
+  }
+
+  .mode-tabs::-webkit-scrollbar { display: none; }
+
+  .mode-tab {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid rgba(200, 150, 42, 0.2);
+    border-bottom: none;
+    background: transparent;
+    color: var(--ash-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    top: 1px;
+  }
+
+  .mode-tab:hover {
+    color: var(--parchment);
+    background: rgba(242, 232, 213, 0.04);
+  }
+
+  .mode-tab.active {
+    color: var(--gold-light);
+    background: linear-gradient(180deg, rgba(200, 150, 42, 0.1) 0%, rgba(200, 150, 42, 0.04) 100%);
+    border-color: rgba(200, 150, 42, 0.4);
+    border-bottom: 1px solid #12100c;
+  }
+
+  /* BRAINSTORM AREA */
+  .brainstorm-area {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .questions-panel {
+    width: 340px;
+    flex-shrink: 0;
+    padding: 24px 20px;
+    border-right: 1px solid rgba(200, 150, 42, 0.1);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ash) transparent;
+  }
+
+  .questions-panel::-webkit-scrollbar { width: 4px; }
+  .questions-panel::-webkit-scrollbar-track { background: transparent; }
+  .questions-panel::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 2px; }
+
+  .mode-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+  }
+
+  .mode-desc {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ash-light);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200, 150, 42, 0.3), transparent);
+    margin: 16px 0;
+  }
+
+  .field-group {
+    margin-bottom: 16px;
+  }
+
+  .field-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .field-hint {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ash);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: rgba(242, 232, 213, 0.05);
+    border: 1px solid rgba(200, 150, 42, 0.2);
+    border-radius: 2px;
+    color: var(--parchment);
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    padding: 8px 10px;
+    outline: none;
+    transition: all 0.2s;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus, select:focus {
+    border-color: rgba(200, 150, 42, 0.5);
+    background: rgba(242, 232, 213, 0.08);
+    box-shadow: 0 0 0 3px rgba(200, 150, 42, 0.07);
+  }
+
+  textarea { min-height: 70px; }
+
+  select option { background: #1a1510; color: var(--parchment); }
+
+  .context-include {
+    background: rgba(45, 74, 45, 0.1);
+    border: 1px solid rgba(45, 74, 45, 0.3);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+  }
+
+  .context-include-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--moss-pale);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .context-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .context-checkbox-list label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--ash-light);
+    cursor: pointer;
+    font-family: 'Crimson Pro', serif;
+  }
+
+  .context-checkbox-list input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--moss-pale);
+  }
+
+  .btn-brainstorm {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(45, 74, 45, 0.6) 0%, rgba(30, 55, 30, 0.8) 100%);
+    border: 1px solid var(--moss-light);
+    color: var(--parchment-dark);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-brainstorm::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .btn-brainstorm:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(61, 107, 61, 0.7) 0%, rgba(45, 74, 45, 0.9) 100%);
+    border-color: var(--moss-pale);
+    box-shadow: 0 0 20px rgba(45, 74, 45, 0.3);
+    color: var(--parchment);
+  }
+
+  .btn-brainstorm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* OUTPUT PANEL */
+  .output-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .output-toolbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .output-toolbar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+
+  .btn-copy {
+    background: transparent;
+    border: 1px solid rgba(200, 150, 42, 0.25);
+    color: var(--ash-light);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover { border-color: rgba(200, 150, 42, 0.5); color: var(--gold-light); }
+
+  .output-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ash) transparent;
+  }
+
+  .output-scroll::-webkit-scrollbar { width: 4px; }
+  .output-scroll::-webkit-scrollbar-track { background: transparent; }
+  .output-scroll::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 2px; }
+
+  .output-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: var(--ash);
+    opacity: 0.6;
+  }
+
+  .output-empty .sigil {
+    font-size: 48px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 12px rgba(200, 150, 42, 0.3));
+    opacity: 0.5;
+  }
+
+  .output-empty p {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 280px;
+  }
+
+  .output-content {
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    color: var(--parchment);
+    line-height: 1.7;
+  }
+
+  .output-content h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin: 24px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.2);
+  }
+
+  .output-content h2:first-child { margin-top: 0; }
+
+  .output-content h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--ash-light);
+    text-transform: uppercase;
+    margin: 16px 0 6px;
+  }
+
+  .output-content p { margin-bottom: 10px; }
+  .output-content ul { padding-left: 20px; margin-bottom: 10px; }
+  .output-content li { margin-bottom: 4px; }
+
+  .output-content strong {
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  .output-content em {
+    font-style: italic;
+    color: var(--parchment-dark);
+  }
+
+  .loading-shimmer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shimmer-line {
+    height: 14px;
+    background: linear-gradient(90deg, rgba(200,150,42,0.05) 0%, rgba(200,150,42,0.12) 50%, rgba(200,150,42,0.05) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite;
+    border-radius: 2px;
+  }
+
+  .shimmer-line.short { width: 60%; }
+  .shimmer-line.medium { width: 80%; }
+  .shimmer-line.full { width: 100%; }
+  .shimmer-line.header { height: 18px; width: 45%; margin-bottom: 4px; }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 5, 0.85);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: linear-gradient(160deg, #1e1810 0%, #161208 100%);
+    border: 1px solid rgba(200, 150, 42, 0.35);
+    border-radius: 4px;
+    width: 480px;
+    max-width: 95vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(200, 150, 42, 0.1);
+    transform: translateY(10px);
+    transition: transform 0.2s;
+    overflow: hidden;
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(200, 150, 42, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+
+  .btn-modal-close {
+    background: transparent;
+    border: none;
+    color: var(--ash);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 2px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+
+  .btn-modal-close:hover { color: var(--parchment); }
+
+  .modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(200, 150, 42, 0.15);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  .btn-primary {
+    background: linear-gradient(180deg, rgba(45, 74, 45, 0.7) 0%, rgba(30, 55, 30, 0.9) 100%);
+    border: 1px solid var(--moss-light);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 9px 20px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(180deg, rgba(61, 107, 61, 0.8) 0%, rgba(45, 74, 45, 1) 100%);
+    box-shadow: 0 0 15px rgba(45, 74, 45, 0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(155, 139, 120, 0.3);
+    color: var(--ash-light);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 9px 20px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { background: rgba(155, 139, 120, 0.08); color: var(--parchment); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: linear-gradient(135deg, #1e1810 0%, #161208 100%);
+    border: 1px solid rgba(200, 150, 42, 0.4);
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 12px 18px;
+    border-radius: 3px;
+    z-index: 200;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <header>
+    <div class="header-sigil">🜃</div>
+    <div class="header-text">
+      <h1>The Witherwild</h1>
+      <p>GM Brainstorm Codex · Fanewick Campaign</p>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- SIDEBAR: Context Library -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Context Library</h2>
+        <button class="btn-add-context" onclick="openContextModal()">+ Add</button>
+      </div>
+      <div class="context-filter-bar" id="contextFilterBar">
+        <button class="filter-btn active" data-cat="all">All</button>
+        <button class="filter-btn" data-cat="npc">NPC</button>
+        <button class="filter-btn" data-cat="faction">Faction</button>
+        <button class="filter-btn" data-cat="location">Location</button>
+        <button class="filter-btn" data-cat="lore">Lore</button>
+        <button class="filter-btn" data-cat="quest">Quest</button>
+        <button class="filter-btn" data-cat="other">Other</button>
+      </div>
+      <div class="context-list" id="contextList">
+        <div class="context-empty" id="contextEmpty">
+          No context entries yet.<br><br>Add NPCs, factions, locations, and lore so the brainstorm tool can reference your world.
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN: Brainstorm -->
+    <div class="main-content">
+      <!-- Mode Tabs -->
+      <div class="mode-bar">
+        <div class="mode-bar-label">Brainstorm Mode</div>
+        <div class="mode-tabs" id="modeTabs"></div>
+      </div>
+
+      <!-- Brainstorm Area -->
+      <div class="brainstorm-area">
+        <!-- Questions Panel -->
+        <div class="questions-panel" id="questionsPanel"></div>
+
+        <!-- Output Panel -->
+        <div class="output-panel">
+          <div class="output-toolbar">
+            <span class="output-toolbar-label">Brainstorm Output</span>
+            <button class="btn-copy" onclick="copyOutput()">Copy Text</button>
+          </div>
+          <div class="output-scroll" id="outputScroll">
+            <div class="output-empty" id="outputEmpty">
+              <div class="sigil">✦</div>
+              <p>Fill in the questions and invoke the brainstorm to conjure ideas for your campaign.</p>
+            </div>
+            <div class="output-content" id="outputContent" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Context Modal -->
+<div class="modal-overlay" id="contextModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="contextModalTitle">Add Context Entry</h3>
+      <button class="btn-modal-close" onclick="closeContextModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Name / Title</label>
+        <input type="text" id="contextName" placeholder="e.g. Nora, Haven, The Witherwild">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Category</label>
+        <select id="contextCategory">
+          <option value="npc">NPC</option>
+          <option value="faction">Faction</option>
+          <option value="location">Location</option>
+          <option value="lore">Lore</option>
+          <option value="quest">Quest</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Details</label>
+        <span class="field-hint">Write as much as you want — this is what the AI will reference during brainstorming.</span>
+        <textarea id="contextDetails" rows="8" placeholder="Describe this element of your world in as much detail as you'd like..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeContextModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveContextEntry()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'witherwild_context_v1';
+let contextEntries = [];
+let editingId = null;
+let currentMode = 0;
+let isLoading = false;
+let lastOutput = '';
+
+// ─── MODES ───────────────────────────────────────────────────────────────────
+const MODES = [
+  {
+    id: 'session-prep',
+    label: 'Session Prep',
+    icon: '📜',
+    desc: 'Plan what happens next — resolve threads, set stakes, clarify the shape of the session.',
+    fields: [
+      { id: 'last_session', label: 'What happened last session?', hint: 'Brief summary of events, decisions, cliffhangers.', type: 'textarea' },
+      { id: 'unresolved', label: 'What threads are unresolved?', hint: 'Dangling plot hooks, unanswered questions, NPC promises.', type: 'textarea' },
+      { id: 'player_goals', label: 'What are the players currently chasing?', hint: "Their stated goals or what they've been focused on.", type: 'textarea' },
+      { id: 'tone', label: 'Desired tone for next session', hint: '', type: 'select', options: ['Tense & dangerous', 'Mystery & discovery', 'Character moments', 'Action-heavy', 'Horror & dread', 'Lore revelation', 'Let the players drive'] },
+      { id: 'extra', label: 'Anything else to consider?', hint: 'Player absences, pacing notes, things you want to include.', type: 'textarea', optional: true },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant helping prepare a Daggerheart TTRPG campaign called "The Witherwild" set in a world called Fanewick.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+SESSION PREP REQUEST:
+Last session summary: ${fields.last_session || 'N/A'}
+Unresolved threads: ${fields.unresolved || 'N/A'}
+Player goals: ${fields.player_goals || 'N/A'}
+Desired tone: ${fields.tone || 'N/A'}
+Additional notes: ${fields.extra || 'None'}
+
+Generate a structured session prep document with these sections:
+1. **Session Hook** — A compelling opening scene or inciting moment that draws from unresolved threads
+2. **Key Scenes** — 3-4 scene ideas with brief descriptions, stakes, and what each reveals or advances
+3. **NPC Moves** — What factions/NPCs are doing off-screen this session (make the world feel alive)
+4. **Potential Complications** — 2-3 ways things could go sideways based on player choices
+5. **Questions to Answer** — Things you (the GM) need to decide before running this
+
+Be specific to Fanewick and the Witherwild setting. Use evocative, dark-fantasy prose for descriptions but keep structural notes practical.`
+  },
+  {
+    id: 'npc-dev',
+    label: 'NPC Development',
+    icon: '👤',
+    desc: 'Build out a character — their personality, contradictions, secrets, and role in the story.',
+    fields: [
+      { id: 'name', label: 'NPC Name', hint: '', type: 'text' },
+      { id: 'role', label: 'Their role in the story so far', hint: 'Ally, antagonist, neutral, unknown to players, etc.', type: 'textarea' },
+      { id: 'known', label: 'What do the players already know about them?', hint: '', type: 'textarea' },
+      { id: 'archetype', label: 'Archetype or vibe', hint: '', type: 'select', options: ['Tragic villain', 'Reluctant hero', 'Morally grey authority', 'Mysterious stranger', 'Loyal but flawed ally', 'Hidden manipulator', 'True believer', 'Survivor', 'Corrupted innocent', 'Wildcard'] },
+      { id: 'want', label: 'What do they want?', hint: 'Their surface desire — what they say they want.', type: 'text' },
+      { id: 'need', label: 'What do they need?', hint: 'Their deeper truth — what they actually need to grow or be redeemed.', type: 'text', optional: true },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant for a Daggerheart TTRPG campaign called "The Witherwild" set in Fanewick, a dark fantasy world.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+NPC DEVELOPMENT REQUEST:
+Name: ${fields.name || 'Unnamed NPC'}
+Role: ${fields.role || 'N/A'}
+What players know: ${fields.known || 'N/A'}
+Archetype: ${fields.archetype || 'N/A'}
+What they want: ${fields.want || 'N/A'}
+What they need: ${fields.need || 'N/A'}
+
+Generate a rich NPC profile with these sections:
+1. **Core Identity** — Personality in 3-4 sentences; voice, mannerisms, what makes them memorable at the table
+2. **Backstory Fragment** — A specific formative experience that explains who they are (2-3 paragraphs, evocative)
+3. **The Secret** — Something they are hiding or don't know about themselves; how it could come out
+4. **Relationships & Leverage** — Who they care about, fear, or owe; what players could use or threaten
+5. **GM Notes** — How to play them at the table: roleplaying tips, tells, how they respond under pressure
+6. **Three Possible Arcs** — Brief options for where their story could go based on player choices
+
+Keep the tone dark, grounded, and emotionally real. Fit them into the Fanewick world.`
+  },
+  {
+    id: 'location',
+    label: 'Location Building',
+    icon: '🗺️',
+    desc: 'Develop a place — its atmosphere, hidden details, dangers, and what it means to the story.',
+    fields: [
+      { id: 'name', label: 'Location Name', hint: '', type: 'text' },
+      { id: 'type', label: 'Type of location', hint: '', type: 'select', options: ['Wilderness / wilds', 'Ruin or abandoned place', 'Settlement or town', 'Dungeon or structure', 'Sacred or cursed site', 'Liminal / between-place', 'Urban district', 'Underground', 'Magical anomaly'] },
+      { id: 'purpose', label: 'Why are the players going here?', hint: "Quest destination, passing through, they don't know yet, etc.", type: 'textarea' },
+      { id: 'vibe', label: 'Atmosphere / emotional feel', hint: 'What should players feel when they arrive?', type: 'select', options: ['Dread and unease', 'Awe and wonder', 'Melancholy and loss', 'Tense and dangerous', 'Mysterious and unknown', 'Oppressive and suffocating', 'Eerie and wrong', 'Ancient and forgotten'] },
+      { id: 'witherwild_touched', label: 'Is this place touched by the Witherwild?', hint: '', type: 'select', options: ['Heavily — this place is corrupted or transformed', 'Partially — signs of it but not overtaken', 'Not yet — but it should feel like it could be', 'No Witherwild presence here'] },
+      { id: 'extra', label: 'Any specific elements to include?', hint: 'NPCs here, objects, lore fragments, things you know you want.', type: 'textarea', optional: true },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant for a Daggerheart TTRPG campaign called "The Witherwild" set in Fanewick, a dark fantasy world where a mysterious supernatural phenomenon called the Witherwild is spreading.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+LOCATION BUILDING REQUEST:
+Name: ${fields.name || 'Unnamed Location'}
+Type: ${fields.type || 'N/A'}
+Why players are here: ${fields.purpose || 'N/A'}
+Atmosphere: ${fields.vibe || 'N/A'}
+Witherwild presence: ${fields.witherwild_touched || 'N/A'}
+Specific elements: ${fields.extra || 'None'}
+
+Generate a rich location document with:
+1. **Read-Aloud Description** — A vivid 3-5 sentence description to read at the table when players arrive (sensory, atmospheric, present-tense)
+2. **Hidden Layers** — 3-4 details players can discover through exploration; escalate from surface to secret
+3. **Points of Interest** — 4-6 specific sub-locations, objects, or features with brief GM notes on each
+4. **Dangers & Complications** — What could go wrong here; environmental hazards, enemies, traps, supernatural threats
+5. **Lore Fragment** — A piece of history or meaning attached to this place; could be found in writing, told by an NPC, or revealed through a skill check
+6. **GM Inspiration** — Mood board in words: music, visual references, tone touchstones for running this place
+
+Make it feel like Fanewick — dark, layered, grounded in consequence.`
+  },
+  {
+    id: 'plot-arc',
+    label: 'Plot & Arc',
+    icon: '🕸️',
+    desc: 'Develop story consequences, foreshadowing, and long-term arc structure.',
+    fields: [
+      { id: 'situation', label: 'Current story situation', hint: 'What is the macro-state of the campaign right now?', type: 'textarea' },
+      { id: 'decision', label: 'A major player decision or event to explore', hint: "What happened that you want to think through consequences for?", type: 'textarea' },
+      { id: 'factions', label: 'Which factions or forces are in motion?', hint: '', type: 'textarea' },
+      { id: 'horizon', label: 'Campaign horizon', hint: '', type: 'select', options: ['Short-term (next 1-2 sessions)', 'Mid-term (next arc, 3-6 sessions)', 'Long-term (endgame and beyond)'] },
+      { id: 'themes', label: 'Themes you want to reinforce', hint: 'What is the campaign really about? Loss, corruption, identity, hope?', type: 'textarea', optional: true },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant for a Daggerheart TTRPG campaign called "The Witherwild" set in Fanewick.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+PLOT & ARC BRAINSTORM REQUEST:
+Current situation: ${fields.situation || 'N/A'}
+Decision/event to explore: ${fields.decision || 'N/A'}
+Factions in motion: ${fields.factions || 'N/A'}
+Campaign horizon: ${fields.horizon || 'N/A'}
+Themes: ${fields.themes || 'N/A'}
+
+Generate a plot development document with:
+1. **Immediate Consequences** — What happens in the next 1-2 sessions as a direct result of the situation/decision
+2. **Ripple Effects** — 3-4 second-order consequences that emerge over time; how the world responds
+3. **Faction Moves** — Specific actions each relevant faction takes in response to current events
+4. **Foreshadowing Seeds** — 4-5 small details, images, or moments to plant now that will pay off later
+5. **Dramatic Questions** — The 2-3 big questions the story is building toward answering
+6. **Possible Endings** — 3 different ways this arc could resolve, from hopeful to tragic
+
+Write with an eye for dramatic tension and emotional resonance. The Witherwild world should feel like it has stakes and momentum.`
+  },
+  {
+    id: 'encounter',
+    label: 'Encounter Design',
+    icon: '⚔️',
+    desc: 'Build a meaningful encounter — not just combat, but stakes, tactics, and twists.',
+    fields: [
+      { id: 'context', label: 'What leads into this encounter?', hint: 'Narrative context — why is this happening now?', type: 'textarea' },
+      { id: 'encounter_type', label: 'Type of encounter', hint: '', type: 'select', options: ['Combat — straightforward', 'Combat — with a twist or objective', 'Social / negotiation', 'Chase or pursuit', 'Survival / environmental', 'Horror / dread', 'Puzzle or mystery', 'Mixed — shifting between types'] },
+      { id: 'enemies', label: 'Who or what are they facing?', hint: 'Describe enemies, antagonists, or the challenge.', type: 'textarea' },
+      { id: 'stakes', label: 'What are the stakes?', hint: "What do they win? What do they lose? What's the worst outcome?", type: 'textarea' },
+      { id: 'twist', label: 'Do you have a twist in mind?', hint: 'Optional — something that changes mid-encounter.', type: 'text', optional: true },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant for a Daggerheart TTRPG campaign called "The Witherwild" set in Fanewick.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+ENCOUNTER DESIGN REQUEST:
+Narrative context: ${fields.context || 'N/A'}
+Encounter type: ${fields.encounter_type || 'N/A'}
+Who they face: ${fields.enemies || 'N/A'}
+Stakes: ${fields.stakes || 'N/A'}
+Twist idea: ${fields.twist || 'None specified'}
+
+Generate an encounter design document with:
+1. **Setup & Atmosphere** — How to frame and introduce this encounter at the table; what players see first
+2. **Objectives & Stakes** — Clear win conditions, loss conditions, and the twist if applicable; what makes this more than a fight
+3. **Tactical Considerations** — Enemy behaviors, battlefield features, environmental elements to leverage; how opposition thinks and adapts
+4. **Escalation Points** — 2-3 moments where something shifts: reinforcements arrive, stakes change, a revelation occurs
+5. **Possible Resolutions** — Multiple ways this could end, including non-obvious solutions players might find
+6. **GM Moves** — Specific Daggerheart GM moves suited to this encounter; what to do when players roll with fear or succeed with hope
+
+Make it feel dangerous, layered, and worth the players' investment.`
+  },
+  {
+    id: 'faction',
+    label: 'Faction Dynamics',
+    icon: '🏛️',
+    desc: 'Develop a faction — their goals, internal tensions, moves, and relationship to other powers.',
+    fields: [
+      { id: 'name', label: 'Faction Name', hint: '', type: 'text' },
+      { id: 'public_goal', label: 'What do they claim to want?', hint: 'Their stated purpose or public face.', type: 'textarea' },
+      { id: 'true_goal', label: 'What do they actually want?', hint: 'Hidden agenda, real motivation.', type: 'textarea' },
+      { id: 'power', label: 'Source of their power', hint: '', type: 'select', options: ['Military force', 'Political control', 'Religious authority', 'Economic wealth', 'Information & secrets', 'Arcane or supernatural power', 'Popular loyalty', 'Ancient claim or lineage', 'Fear and intimidation'] },
+      { id: 'tension', label: 'Internal tensions', hint: 'Factions are never monolithic — what is dividing them from within?', type: 'textarea', optional: true },
+      { id: 'relationship', label: 'Their relationship to the players', hint: 'Patron, antagonist, neutral, unknown to players, etc.', type: 'text' },
+    ],
+    prompt: (fields, context, codexSection = '') => `You are a creative GM assistant for a Daggerheart TTRPG campaign called "The Witherwild" set in Fanewick.
+
+${context ? `CAMPAIGN CONTEXT:\n${context}\n` : ''}${codexSection}
+
+FACTION DYNAMICS REQUEST:
+Name: ${fields.name || 'Unnamed Faction'}
+Public goal: ${fields.public_goal || 'N/A'}
+True goal: ${fields.true_goal || 'N/A'}
+Source of power: ${fields.power || 'N/A'}
+Internal tensions: ${fields.tension || 'N/A'}
+Relationship to players: ${fields.relationship || 'N/A'}
+
+Generate a faction document with:
+1. **Overview** — Who they are, what they represent, their place in Fanewick's landscape (2-3 paragraphs)
+2. **Leadership** — 2-3 key figures; brief profiles with their individual agendas within the faction
+3. **Internal Fractures** — The tensions, competing visions, and personalities that could tear them apart or be exploited
+4. **Current Moves** — What this faction is actively doing right now in the world; 3-4 specific actions or schemes
+5. **Relationship Web** — How they relate to other factions, the Witherwild, and the players; leverage points
+6. **Hooks & Complications** — 4 ways players could get entangled with this faction, from alliance to opposition
+7. **If They Win** — What Fanewick looks like if this faction achieves their true goal
+
+Make them feel like a real political body with real history, not a monolith.`
+  },
+];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+const SEED_ENTRIES = [
+  // ── LORE ──────────────────────────────────────────────────────────────────
+  { id: 'seed_lore_witherwild', name: 'The Witherwild', category: 'lore', details: 'The Witherwild is an uncontrolled magical corruption caused by Haven stealing the Reaping Eye from the Great Owl Nikta. Without the Reaping Eye, Fanewick is locked in permanent spring — life grows but cannot decay or be harvested. The result: creatures grow to massive sizes, trees warp and hunt people, vines creep along the forest floor. The Witherwild is spreading daily. It doesn\'t reach the treetops, and fires on the forest floor can hold it back. Withered creatures have glowing purple-aura lacerations and spread corruption on contact. The Witherwild is not a disease — it is a corruption of consequence.' },
+  { id: 'seed_lore_serpents_sickness', name: "Serpent's Sickness", category: 'lore', details: "A deadly plague affecting Haven's population, caused by stone dust from Shun'Aush's remains rising to the surface after centuries of farming and excavation. Progression: victims first cough up dust, then develop a rough scaling rash across their body, then their flesh, bones, and organs ossify so quickly that many are frozen where they stand. Over half of Haven's population has been claimed. The city is filled with statues of citizens frozen in their last moments of agony. The only known cure is the Crimson Lady's Veil." },
+  { id: 'seed_lore_crimson_veil', name: "Crimson Lady's Veil", category: 'lore', details: "A rare red flower that cures the Serpent's Sickness. Grows in Fanewick's flower fields during spring — only one red flower grows per 10,000 white flowers. The rarity is unchanged even after the endless spring caused by the Witherwild. The cure works by thoroughly muddling petals into water from the great springs of Gor's Descent, then fully submerging the petrified body in the mixture — stone softens and the body returns to flesh. Haven has converted Fanewick bogs into massive flower fields to harvest it. The King hoards the supply and uses it as political leverage. Despite endless spring, the cure remains just as rare — the King may be lying about this." },
+  { id: 'seed_lore_nikta', name: 'Nikta, The Great Owl (Shepherd of Seasons)', category: 'lore', details: 'A powerful Faint Divinity — the Great Owl who watches over all of Fanewick, governing the cycle of seasons. She has two eyes: the Sowing Eye (governs growth, renewal, spring into summer — warm green-gold light) and the Reaping Eye (governs decay, dormancy, death, autumn into winter — silver and cold). She alternates which eye she uses. Haven stole her Reaping Eye and stored it in an impenetrable vault beneath Haven\'s Wizarding School. Now she can only watch with her Sowing Eye, locking Fanewick in endless spring. She is broken and without purpose, forced to watch the forest spiral out of control. The Fanewraith plans to steal her remaining Sowing Eye to "blind the Shepherd for good" — this would stop all growth and decay, creating a stillborn world.' },
+  { id: 'seed_lore_reaping_eye', name: "The Reaping Eye (artifact)", category: 'lore', details: "One of Nikta's two eyes, stolen by Archmage Phylax on orders of King Edran Caleor. Stored in an impenetrable vault beneath Haven's Wizarding School — a vault requiring 4 magical runes to access. Its theft caused the Witherwild. Returning it to Nikta would restore the seasonal cycle and end the Witherwild. The Fanewraith's plan (using Shun'Aush's heart fragment + rune essence amulet) is designed to weaken Nikta enough to steal the remaining Sowing Eye — not to recover the Reaping Eye." },
+  { id: 'seed_lore_shun_aush', name: "Shun'Aush the Granite Ophid", category: 'lore', details: "A once-mighty Faint Divinity — a large serpent-like being with bones of solid granite. Killed by Haven's founders centuries ago as part of their plan to be free of the Faint Divinities. Haven built their city walls into his remains. His stone dust settled into the earth and eventually caused the Serpent's Sickness as revenge. His heart did not turn to dust like the rest of him — it sank into the mud of the Bogs of Despair and left something behind. The Fanewraith seeks a fragment of his heart, believing it can be combined with rune essence to create an amulet capable of weakening Nikta." },
+  { id: 'seed_lore_faint_divinities', name: 'Faint Divinities', category: 'lore', details: 'Thousands of lesser gods/spirits roaming Fanewick. They perform small miracles and services for inhabitants but also make travel deadly for outsiders — luring them into bogs, off cliffs, etc. Each has unique benefits and dangers. Locals follow strict superstitions to stay safe (tributes, hopping on one foot, etc.) but nothing is 100% reliable. Originally they could freely travel between their realm and the mortal world through a portal (Tailspire Crags), but the portal shattered centuries ago, stranding them. Some are benevolent, some lash out in anger or boredom. The Witherwild has driven some (like Stonewraiths) out of their usual territories.' },
+  { id: 'seed_lore_whisperstones', name: 'Whisperstones', category: 'lore', details: 'Ancient round stone spheres with intricate geometric carvings that glow blue. Scattered throughout Fanewick. Said to hold the voices of the Ancients and can be used to glimpse visions of the past or future. They appear to have been smashed into the ground — no known origin. They hum and whisper "come closer, touch me." When touched: the hum amplifies, a pulse of magic bursts outward, and the toucher experiences a vision. Visions include: the Order of the Bone cult\'s ritual of willing petrification; Nikta with her single Sowing Eye unleashing unchecked growth; a cloaked figure (the Fanewraith?) holding an amulet with an eye etching while chanting.' },
+  { id: 'seed_lore_fanewick_history', name: 'Eldoria & History of Fanewick', category: 'lore', details: 'Haven and Fanewick were once one nation called Eldoria — a serene, peaceful continent. Two main cities: Big Branch (north, coastal fishing/trade hub) and Woodcrest (south, built into the forest, known for hunters and lumber). Haven\'s founders wanted freedom from the Faint Divinities and killed Shun\'Aush to achieve dominance. The weekly sun cycle: the sun takes an entire week to rise and set, then night takes another week. Flora and fauna adapt to these weekly cycles — some creatures hibernate, some plants complete their entire life cycle in a week.' },
+  { id: 'seed_lore_tailspire_crags', name: 'Tailspire Crags', category: 'lore', details: 'Once a portal connecting the mortal realm and the Faint Divinities\' home realm — allowing them to freely travel between worlds. A powerful earthquake shattered the bridge/connection centuries ago, stranding all Faint Divinities in the mortal realm. Now two stone pillars stand apart. The Witherwild behaves differently here — instead of attacking recklessly, it protects the crags and resists any attempt to repair the connection. Some Faint Divinities believe the portal will reopen once the higher deities of their plane are satisfied. The Stone Cipher (solved by Elara) reveals the location of a protective ward tied to this site.' },
+  { id: 'seed_lore_order_of_bone', name: 'Order of the Bone (cult)', category: 'lore', details: "A secretive underground cult that believes turning to stone (via Serpent's Sickness) is not death but ascension. Flesh is a temporary burden — pain, hunger, fear, grief. Stone is freedom. They claim Shun'Aush didn't perish but shed his flesh and became something greater. Those who turn to stone follow his path. They oppose the Crimson Lady's Veil cure. They carry bone dust and provide it to converted followers. Their rituals involve kneeling in a circle, chanting, and pressing bone dust to lips or foreheads until their breathing slows and stone creeps across their skin — gently, willingly. Bodies are hidden under tree roots, in abandoned cellars, sealed caves. Led by Mother Stillroot, a cloaked Fungril who uses spores to entrance followers. She genuinely believes she offers mercy." },
+
+  // ── FACTIONS ──────────────────────────────────────────────────────────────
+  { id: 'seed_faction_haven', name: 'Haven', category: 'faction', details: "The once-dominant city-state, built into the remains of Shun'Aush the Granite Ophid. Founded by people who wanted to be free of the Faint Divinities ('The Godless Gate'). Now ravaged by Serpent's Sickness. Led by King Edran Caleor. Militarily powerful — decimated Wickling forces in one of the bloodiest battles in recent history. Publicly claims all actions are out of desperation to cure the Sickness. Secretly: the King hoards Crimson Lady's Veil as political power. Their flower fields multiply yearly but the cure remains rare — Ronan believes the King is lying. They continue to push into Fanewick daily, building new flower fields, destroying villages, forcing survivors to labor. Some fields are known to enslave Wicklings. Not officially sanctioned but nothing is done to stop it." },
+  { id: 'seed_faction_resistance', name: 'The Fanewick Resistance', category: 'faction', details: "A resistance group including all types of Wicklings and even a few Havenites, banded together against Haven's chokehold on Fanewick. Led by Ronan (and others not yet met). Their camp is hidden underground — narrow entrance in underbrush, opens into a large crystalline chamber with branching corridors. They believe Haven is lying: flower fields multiply, yields increase, armies grow — but the cure doesn't improve. They need a better strategy than just reclaiming fields. They are watching the party and evaluating them. Ronan brought the party in after observing them fight the Great Stag. Princess Lyra Caleor may have joined them — unconfirmed." },
+  { id: 'seed_faction_jagged_knife', name: 'Jagged Knife Bandits', category: 'faction', details: "Bandit group loyal to the Fanewraith operating out of a cave hideout on the Fire Falls cliffside. Led by Mirek, a lieutenant loyal only to coin and his life. Their assignment: keep people away from the caves and mine rune essence from the cave walls. They disrupt trade routes into Alula, harass travelers, and steal supplies. Mirek has been in the Fanewraith's presence but never met her directly. He thinks she's an Orc (glimpsed tusks under the cloak). The party has already cleared out this cell." },
+  { id: 'seed_faction_fanewraith_followers', name: "Fanewraith's Followers", category: 'faction', details: "A growing network of followers loyal to Vaelora Iln (the Fanewraith). They resupply at the Treetop Tavern in Alula. Had a cave operation at Fire Falls (cleared by party). The Fanewraith's inner network is unknown — she appears, gives orders, drops gold, and vanishes. She approached King Caleor directly and met with him behind closed doors multiple times, suggesting a potential deal with Haven's leadership. Kreil Dirn (Haven's spymaster) is alarmed that Haven armies are being assembled without his knowledge." },
+
+  // ── NPCS ──────────────────────────────────────────────────────────────────
+  { id: 'seed_npc_fanewraith', name: 'The Fanewraith (Vaelora Iln)', category: 'npc', details: "Real name: Vaelora Iln. Tall figure, always hooded. Pasty white skin with long fingers. Gravelly voice. Possibly an Orc — Mirek glimpsed tusks. Once a Fane Tender (priestly caste maintaining sacred sites between mortals and Divinities). Was devoted to Nikta. Tried to mediate between Haven and Fanewick — offered healing, led pilgrimages, preached the land was sacred. Haven didn't listen. When they took the Reaping Eye, something broke in her — she died and lived again, her body withered, voice became roots and wind. The first Witherwild bloom erupted from her grief. Her plan: steal Nikta's Sowing Eye using an amulet made from Shun'Aush's heart fragment + rune essence, which will weaken Nikta enough to overpower her. Wants to blind the Shepherd permanently — stop all growth, collapse Haven, watch the Archmage suffer. Has shown incredible power: paralyzed the entire party in mid-air without restraints. Met privately with King Caleor. Has knowledge of the party's movements. Her deeper wound: she buried her hope with her people and doesn't believe Fanewick can be saved — only ended on her terms." },
+  { id: 'seed_npc_nora', name: 'Nora Clovefoot', category: 'npc', details: "Warrior Faun (she/her). 6.5 ft tall. Wears loose flowing clothes over tightly fitted armor. Fast, ferocious, acrobatic fighting style with a large sword and shield. Stats: Evasion 12 / Threshold 12/20 / HP 8. Experiences: Guilty Conscience +2, Haven army soldier +2. Background: Fought in the Haven Army in the early days of the Fanewick invasion — brutal and effective. Witnessed the army's disregard for Faint Divinities and Wicklings. Began to question the cost. Her closest friends are frozen in Haven by the Serpent's Sickness. She defected. Not welcomed in Wickling villages because of her past. Lives at the base of Alula's entrance, protecting people there. She saved the party from wolves and a Withered Bear in the forest. Followed the party to the Bogs of Despair and saved them from the Fanewraith with a shield slam. Wants to join the resistance and prove herself. She is NOT a Haven blade anymore. Motive: atone for past mistakes by protecting others whether they forgive her or not." },
+  { id: 'seed_npc_ronan', name: 'Ronan', category: 'npc', details: "Simiah Ranger (he/him). ~5 ft tall. Always wears a hooded cloak. Carries a bow and quiver. His wolf companion Snaggletooth (gray wolf in fitted leather armor) is always at his side. Anti-social at first but warms up once Snaggletooth accepts someone. Part of the Fanewick Resistance — has been for some time, part of something larger than Alula. Tested the party by following them on the Great Stag hunt and observing them. Sent the party a note via Mugsy after the bandit cave quest. Wants to bring them to meet the resistance. Met the party at the Split Oak (lightning-struck but still living tree) with Snaggletooth. Has been seeing Stonewraiths and mountain creatures coming down out of their usual territory — concerned. Motive: prove he is the best hunter, sometimes takes credit for others' work. Snaggletooth: fiercely protective of Ronan, initially hostile to Bunt but was won over by a treat." },
+  { id: 'seed_npc_kameus', name: 'Kameus', category: 'npc', details: "Galapa Healer (he/him). Large Galapa wearing a cleric-style robe. Carries a staff with a blue marble ball on top. Was a battle healer on Fanewick's front line for 50 years. Now lives in Alula healing the sick and injured. He has patched up some of the Fanewraith's people, but they don't talk much so he has no specific intel. Knows about the Whisperstones — explained them to the party. Directed the party to the Treetop Tavern after healing them. Knows Nora. Difficulty: 12. Motive: serve Fanewick in every way possible. Loyal to a fault." },
+  { id: 'seed_npc_mugsy', name: 'Mugsy', category: 'npc', details: "Firbolg Barkeep (she/her) of the Treetop Tavern in Alula. Stout woman, runt of her family. Almost dwarven face, long hair with two thick braids over each shoulder. Drooping ears. Southern accent. Difficulty: 10. Knows the Fanewraith's cult members come to the tavern to resupply and has overheard them mention a cliffside hideout near Fire Falls. Passed on a note from Ronan to the party after the bandit quest. Business improved after party cleared the Jagged Knife bandits — trade shipments are reliable again. Friendly, welcoming. Motive: get people drunk and live vicariously through their stories." },
+  { id: 'seed_npc_elara', name: 'Elara', category: 'npc', details: "Faerie Scholar (she/her). Very small (~3.5-4 ft), Loreborne Faerie. Full of excited, nervous energy — kind of nags the party. Bookish, oblivious to the tavern rowdiness when absorbed in research. Was studying a worn map and a leather-bound journal at the Treetop Tavern. Knows about the Stone Cipher — ancient code hidden in the Unsleeping Wood, believed to hold the location of a ward keeping the Witherwild back. Needed party protection to decipher it. After solving the Cipher: revealed it was built by the Faint Divinities to protect against magical corruption after the fall of Tailspire Crags. Hints of another Cipher buried deeper in the mountains. HP: 4 (fragile). Difficulty: 12. Motive: make a new discovery that will help the village." },
+  { id: 'seed_npc_mirek', name: 'Mirek', category: 'npc', details: "Jagged Knife bandit lieutenant. Loyal only to coin and his life. Has been in the Fanewraith's presence multiple times but never met her directly. Describes her: terrifying presence, creaky gravelly voice, always hooded dark cloak, pasty white hands with long fingers, possibly glimpsed tusks (thinks she's an Orc). She shows up, gives orders, drops gold, vanishes. His assignment: keep people away from the caves near Fire Falls and mine rune essence from the cave walls. He overheard that she was headed to the Bogs of Despair to find a fragment of Shun'Aush's heart — combined with rune essence, she believes it will make an amulet that weakens a god. Surrendered to the party. Promised to disappear in exchange for his life." },
+  { id: 'seed_npc_kreil', name: 'Kreil Dirn', category: 'npc', details: "Haven's spymaster. Not seen kindly by the people of Haven. Has a vast spy network. Hired the party under cover of darkness in the woods far outside Haven's walls to stop the Fanewraith from stealing Nikta's Sowing Eye. He sees the long-term consequences of the Fanewraith's plan. Recently alarmed: Haven armies are being assembled without his knowledge, following the Fanewraith's private meetings with King Caleor. His sources inside Shun'Aush (Haven) say nobles are buying salvation while the rest of the city turns to stone. His loyalty and true agenda are unknown to the players — can he be trusted?" },
+  { id: 'seed_npc_king', name: 'King Edran Caleor, Lord of the Veil', category: 'npc', details: "Haven's king. Ordered the theft of Nikta's Reaping Eye after his daughter Princess Lyra Caleor developed the Serpent's Sickness scaling rash. Sees himself as godly. Hates the Faint Divinities out of jealousy of their power. Loves the power of being able to let people die. Enjoys making others suffer. Hoards the largest supply of Crimson Lady's Veil in the world — uses it as political power over his own people. His grandfather/father killed Shun'Aush and built Haven into his remains, passing down the hatred and jealousy of Faint Divinities through generations. Recently met privately with the Fanewraith multiple times. Haven armies are being mobilized without Kreil's knowledge. His daughter Princess Lyra was eventually cured, then disappeared — rumored to have joined the Wickling resistance." },
+  { id: 'seed_npc_lirath', name: 'Lirath, The Shadow Trickster', category: 'npc', details: "A god of mischief, illusions, and cleverness. Thrives on wit and cunning. Plays pranks on gods and mortals alike using illusions and trickery — to teach lessons or for entertainment. Despite his mischievous nature, revered for intelligence and resourcefulness. Guides those who seek clever solutions. His presence is subtle — felt in moments of surprise or unexpected turns. He showed Yin the truth about her father's cult (the Kit Kat Club) and their shameful acts. Connection to Yin is significant — she acts partly because of what he revealed to her." },
+  { id: 'seed_npc_mother_stillroot', name: 'Mother Stillroot', category: 'npc', details: "Leader of the Order of the Bone cult. A cloaked Fungril. Uses her spores to entrance followers and calm them — making the 'ascension' feel peaceful and willing. Genuinely believes she is offering mercy to those suffering from the Witherwild. Takes advantage of people who have been directly affected and are desperate. Her rituals involve chanting circles, pale yellow spores drifting like snow, bone dust pressed to lips and foreheads. Attendees smile as stone slowly creeps across their skin. She calls the newly petrified 'free.' Stores the statues under tree roots, in abandoned cellars, in sealed caves." },
+
+  // ── PCs ────────────────────────────────────────────────────────────────────
+  { id: 'seed_npc_herbtle', name: 'Herbtle the Turtle (PC)', category: 'npc', details: "Played by Tommy. Galapa Druid, Seaborne. Traveled at sea with his best friend Phil the Fog, who died — Phil is now a ghost on his shoulder who gives tips. Grew up by the sea, knows how to prepare seaweed, filter water, survive. Hippie attitude. Reliant on nature (his people hatch young and touch the great blue water for the first time there). Being hunted by Shredder of the Foot Clan, who wants his pizza. From a tree village on the western coast called The Great Spliff. Was displaced from his community by the Witherwild." },
+  { id: 'seed_npc_nlirk', name: "N'lirk Gl'ouk / Lirk (PC)", category: 'npc', details: "Played by Jon. Fungril Witch, Wildborne. Pronouns: it/its. 7 ft tall — grew larger than normal due to the Witherwild. Spawned from a powerful line of witch fungus and was born with some ancestral memories. Carries spells in dried fungal spores. Displeased Faint Divinity Fulgs by accidentally knocking over their stack of stones — Fulg killed its mother in an avalanche out of anger. Fled its home town (The Cackling Moor) when the earthquake that caused the avalanche cracked the gathering area and the Witherwild overran it. Pays tribute to Faint Divinity Oove, who warned it about the Witherwild attacking the village (giving it time to escape). Has a fungal network it likes to communicate with. Has agreed to help Yin make a poison to kill her brother. Tendency to talk to its fungal network — build this into encounters." },
+  { id: 'seed_npc_bunt', name: 'Bunt Hunglechunk (PC)', category: 'npc', details: "Played by Kurt. Galapa Bard, Wanderborne. Owner of a speakeasy and turtlesque (burlesque) called Noc'turtle. Holds clandestine social meetings to steal from the rich and give to the poor in Noc'turtle's basement. Takes advantage of chaos from the Witherwild to exploit people — conflicted about this. His people are nomads; only Bunt knows where the money laundering hidey-hole is. Go-fers deliver money to him each night during long rests. Collects bugs in his pocket. Talks himself into and out of trouble. Uncle: famous Galapa character actor & musician Turt Bacharach (never removed sunglasses, only spoke in rhymes) taught him confidence. Was in love with tattoo artist Shelly Bungalow, who disappeared before completing his chest piece outline. Dresses scantily. Sad eyes. Has a troubled history with Snaggletooth but is making amends." },
+  { id: 'seed_npc_yin', name: 'Yin the Shadowcat (PC)', category: 'npc', details: "Played by Jillian. Katari Rogue, Underborne. Black cat who blends into darkness. Lots of hanging charms. Her father ran the Kit Kat Club cult, which performed shameful acts with him at the center as High Priest. Lirath the Shadow Trickster showed her the truth of the cult. She killed her father because of it. Her brother Yang (a white cat, her opposite) has been chasing her — but actually Yang killed their father and pinned it on Yin to keep her quiet. Is hunting Yin to silence her. She is collecting rare ingredients with N'lirk to make a poison to kill Yang: Belladonna Black Adder Venom from Black Lotus (Bogs of Despair — COLLECTED), Whistling Thresh Feet (Fields of Unceasing Song — pending), Blood Vine Nectar (Carnivorous Divide — pending). Accidentally knocked over a painting in Ikla's house when she broke in. Most sad to have left her knitting group." },
+
+  // ── LOCATIONS ─────────────────────────────────────────────────────────────
+  { id: 'seed_loc_alula', name: 'Alula', category: 'location', details: "Treetop village in The Unsleeping Wood. Independent — has avoided choosing sides in the war. Used as neutral ground by both Havenites and Wicklings for meetings. All treetops connected by rope bridges. Large municipal platform at center with bridges leading outward. Built from locally sourced wood that blends into surroundings. The Witherwild hasn't reached the treetops. Fires burning in pyres on the forest floor keep the Witherwild back (but don't stop infected creatures from wandering in). Elite hunting clan patrols the forest floor below. Key locations: Treetop Tavern (loud, vibrant, tree through center, bar rings it, inn rooms above), Timber's Trinkets (halfling merchant, poorly stocked until trade restored), The Archives (small library of local history), The Whispering Post (adventurer request board — requires reputation). Nora is not permitted to enter the village." },
+  { id: 'seed_loc_bogs_of_despair', name: 'Bogs of Despair', category: 'location', details: "Said to be the location where Shun'Aush's heart finally decayed after Haven slew him. Those who enter rarely emerge — forever lost in sorrow. At night you can hear the faint desperate cries of its lost souls. The Fanewraith came here to find a fragment of Shun'Aush's heart (still carries power after all these centuries, sank into the mud and left something behind). The party encountered and was paralyzed by the Fanewraith here. Nora saved them with a shield slam. Site of the Fanewraith's first monologue. Also: Belladonna Black Adder Venom from Black Lotus grows here (collected by Yin for her poison)." },
+  { id: 'seed_loc_fire_falls', name: 'Fire Falls & Cliffside', category: 'location', details: "A waterfall on the eastern face of a large cliff. The roar of the falls is loud and masks combat noise. A narrow wooden cliffside path clings to the cliff face — soft, rotted planks, fog, missing boards with hundred-foot drops below. Full of traps: rotted boards, tripwires with crossbows, slippery moss, collapsing sections, weighted nets, creeping vines. The bandit camp (Jagged Knife) was at the top — crates, pulley system for supplies, scavenged structures around the outcrop overlooking the falls. A cave behind the camp was the actual hideout (now cleared by the party). The Great Stag was found at the base of Fire Falls in a clearing with a thin mist from the water. Crystal Bridge (Haven fortress) is built atop Fire Falls." },
+  { id: 'seed_loc_unsleeping_wood', name: 'The Unsleeping Wood', category: 'location', details: "The large forest of Fanewick, home to many races of Wicklings. Under the Witherwild's influence: thick spongy vines that pulse like a heartbeat against trees, warped and hunting treants, giant mosquitos, Withered creatures. The forest floor is dangerous — Withered animals, Dire Wolves, Withered Bears. Treetops are unaffected by the Witherwild so far. Stonewraiths (feline stone creatures made of slate and granite) have been appearing further from the mountains than usual — something is driving them down. The abandoned campsite near the Resistance approach had Stonewraiths present." },
+  { id: 'seed_loc_split_oak', name: 'The Split Oak', category: 'location', details: "Landmark in the northwest woods, beyond the hunting ground. A massive oak split cleanly down the trunk by lightning long ago — charred in the center but both halves still live, growing as two separate but connected trees. Ronan uses it as a meeting point. The air smells of damp bark and old leaves. Forest is silent here — no insects or wildlife. But you feel watched. Ronan used it as a metaphor: like Fanewick after Haven's blow — struck and split but surviving and growing back stronger." },
+  { id: 'seed_loc_resistance_hideout', name: 'Resistance Hideout', category: 'location', details: "Small entrance in underbrush — narrow hole in the ground. Crystalline stone lines the walls, opening into a very large underground chamber. Multiple corridors branch out from the main chamber, each labeled with signs showing alphanumeric ranges (A1-B35, B36-C80, etc). Location is secret — Ronan brought the party there after vetting them at the Split Oak. Party has not yet been inside." },
+  { id: 'seed_loc_carnivorous_divide', name: 'The Carnivorous Divide', category: 'location', details: "Plants have evolved into monstrous carnivorous forms. Air is thick with golden pollen and spores causing hallucinations and paranoia. Blood vine (thick barbed red vine) slithers across the ground dragging prey. Everything moves and writhes — the forest feels like it's hunting you. Blood Vine Nectar is an ingredient Yin needs for her poison (not yet collected). Insight Check DC 12 to identify Blood Vine." },
+  { id: 'seed_loc_fields_unceasing', name: 'The Fields of Unceasing Song', category: 'location', details: "Fields with a haunting melody — said to be the ghost of a Wickling woman betrayed by her Havenite lover. The wind carries her sorrowful melody. The winds can entrance travelers. Haven has flower farms with distant lights visible at night. Ilara, the Drowning Song (Faint Divinity) operates here — lures people to their deaths with entrancing melody. Was once peaceful: travelers used to sing with her and she taught riverfolk the harmony of currents. Whistling Thresh Feet — an ingredient Yin needs for her poison — grows here (not yet collected)." },
+  { id: 'seed_loc_haven_city', name: 'Haven (city)', category: 'location', details: "Built into the remains of Shun'Aush the Granite Ophid — the massive stone walls ARE his bones. Eerie collection of statues depicting citizens frozen in their last moments of agony. Inhabitants who venture outside must wear ventilators because of bone dust in the air. The impenetrable vault beneath Haven's Wizarding School holds the Reaping Eye — 4 magical rune barrier. The King's palace has great hall and throne room. Military sector with large war table. Ronan has sources inside Haven (inside 'Shun'Aush') who confirm nobles buy salvation while commoners turn to stone." },
+
+  // ── QUESTS ────────────────────────────────────────────────────────────────
+  { id: 'seed_quest_fanewraith', name: 'Stop the Fanewraith', category: 'quest', details: "Main quest. Hired by Kreil Dirn to stop the Fanewraith from stealing Nikta's Sowing Eye. Progress: Cleared the Jagged Knife bandit cell at Fire Falls (COMPLETE). Confronted the Fanewraith at the Bogs of Despair — she paralyzed the party, gave her monologue, then escaped when Nora intervened. Now know her plan: Shun'Aush heart fragment + rune essence = amulet to weaken Nikta. She has met privately with King Caleor. Haven armies are being mobilized. The Fanewraith's real identity is Vaelora Iln, a former Fane Tender. Her stated goal: blind the Shepherd permanently, collapse Haven, watch the Archmage suffer. Open questions: Is King Caleor now an ally of the Fanewraith? What did they agree to? What is the Fanewraith's next move after the Bogs?" },
+  { id: 'seed_quest_yins_poison', name: "Yin's Poison", category: 'quest', details: "Yin needs a poison to kill her brother Yang (who framed her for their father's murder and is hunting her). Ingredients needed: (1) Belladonna Black Adder Venom from Black Lotus — Bogs of Despair — COLLECTED. (2) Whistling Thresh Feet — Fields of Unceasing Song — NOT YET COLLECTED. (3) Blood Vine Nectar — Carnivorous Divide — NOT YET COLLECTED. N'lirk agreed to make the poison once all ingredients are gathered." },
+  { id: 'seed_quest_stag', name: 'Hunt for The Great Stag', category: 'quest', details: "COMPLETE. Party tracked and killed the Great Stag at the base of Fire Falls. Snaggletooth accompanied. Before it died, the Stag's antlers blazed with blue light and a booming voice warned the antlers' power was not meant for mortal hands. Party took the antlers anyway. Ronan confirmed the antlers can be used to craft a weapon that summons the spirit of a Faint Divinity under the wielder's control — valuable to the resistance against Haven. Yin set a trap at the Stag's sleeping spot as part of the hunt." },
+  { id: 'seed_quest_stone_cipher', name: 'The Stone Cipher', category: 'quest', details: "Quest given by Elara. The Stone Cipher is an ancient code hidden in the Unsleeping Wood, tied to the Tailspire Crags. Elara believed it could reveal a ward that keeps the Witherwild back and protect merchant trade routes. The party protected Elara through three waves of Witherwild creatures at the stone circles. Upon completion: a dome of protective sigils formed (the Reaping Ward artifact). Elara revealed the Cipher was built by Faint Divinities after the fall of Tailspire Crags. Hints of another Cipher buried deeper in the mountains. The Reaping Ward: allies within close range add +2 to damage rolls against Withered adversaries. Placeable but immovable until deactivated; can't reactivate until long rest." },
+  { id: 'seed_quest_resistance', name: 'Journey to the Resistance', category: 'quest', details: "Following the events at the Bogs of Despair, Ronan sent a note via Mugsy instructing the party to head northwest beyond the hunting ground, follow old trails to the Split Oak (struck by lightning but still standing), and wait there until nightfall. Nora accompanied the party. Route: southwest around the cliff face of Fire Falls (easier climb there), then northwest up through the ridge toward the Split Oak. Hazards: agility climb up the cliff face (DC 10), an abandoned campsite ambushed by Stonewraiths (feline creatures of layered slate and granite that burst up from the ground — normally deeper in the mountains but something is driving them down). Ronan met them at the Split Oak with Snaggletooth after nightfall, confirmed they weren't followed. He witnessed their Stonewraith fight and said the resistance could use fighters like them. Long rested at the Split Oak. Next morning: Ronan will bring the party to meet the full resistance. The resistance hideout has a narrow underground entrance that opens into a large crystalline chamber with labeled corridors. Status: party is en route / just arrived at hideout — not yet fully inside." },
+];
+
+function init() {
+  loadContext();
+  seedDefaultEntries();
+  renderContextList();
+  renderModes();
+  renderQuestions(0);
+}
+
+const SEED_VERSION = 3;
+const SEED_VERSION_KEY = 'witherwild_seed_version';
+
+function seedDefaultEntries() {
+  const savedVersion = parseInt(localStorage.getItem(SEED_VERSION_KEY) || '0');
+  if (savedVersion >= SEED_VERSION) return;
+  const existingIds = new Set(contextEntries.map(e => e.id));
+  SEED_ENTRIES.forEach(entry => {
+    if (!existingIds.has(entry.id)) {
+      contextEntries.push({ ...entry });
+    }
+  });
+  saveContext();
+  localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
+}
+
+// ─── CONTEXT STORAGE ─────────────────────────────────────────────────────
+function loadContext() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) contextEntries = JSON.parse(saved);
+  } catch(e) { contextEntries = []; }
+}
+
+function saveContext() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(contextEntries)); } catch(e) {}
+}
+
+let activeFilter = 'all';
+
+function renderContextList() {
+  const list = document.getElementById('contextList');
+  const empty = document.getElementById('contextEmpty');
+
+  const filtered = activeFilter === 'all'
+    ? contextEntries
+    : contextEntries.filter(e => e.category === activeFilter);
+
+  // Remove old entries
+  list.querySelectorAll('.context-entry').forEach(e => e.remove());
+
+  if (filtered.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  filtered.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'context-entry';
+    div.dataset.id = entry.id;
+    div.innerHTML = `
+      <span class="context-tag tag-${entry.category}">${entry.category.charAt(0).toUpperCase() + entry.category.slice(1)}</span>
+      <h4>${escHtml(entry.name)}</h4>
+      <p>${escHtml(entry.details)}</p>
+      <div class="context-entry-actions">
+        <button class="btn-entry-action btn-edit" data-action="edit" data-id="${escHtml(entry.id)}">Edit</button>
+        <button class="btn-entry-action btn-delete" data-action="delete" data-id="${escHtml(entry.id)}">Remove</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// Event delegation for context entry buttons
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  if (action === 'edit') openContextModal(id);
+  if (action === 'delete') deleteContext(id);
+});
+
+// Filter bar clicks
+document.addEventListener('click', function(e) {
+  const fb = e.target.closest('.filter-btn');
+  if (!fb) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  fb.classList.add('active');
+  activeFilter = fb.dataset.cat;
+  renderContextList();
+});
+
+
+function openContextModal(id = null) {
+  editingId = id;
+  const modal = document.getElementById('contextModal');
+  const title = document.getElementById('contextModalTitle');
+
+  if (id) {
+    const entry = contextEntries.find(e => e.id === id);
+    if (!entry) return;
+    title.textContent = 'Edit Context Entry';
+    document.getElementById('contextName').value = entry.name;
+    document.getElementById('contextCategory').value = entry.category;
+    document.getElementById('contextDetails').value = entry.details;
+  } else {
+    title.textContent = 'Add Context Entry';
+    document.getElementById('contextName').value = '';
+    document.getElementById('contextCategory').value = 'npc';
+    document.getElementById('contextDetails').value = '';
+  }
+
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('contextName').focus(), 200);
+}
+
+function closeContextModal() {
+  document.getElementById('contextModal').classList.remove('open');
+  editingId = null;
+}
+
+function editContext(id) { openContextModal(id); }
+
+function deleteContext(id) {
+  contextEntries = contextEntries.filter(e => e.id !== id);
+  saveContext();
+  renderContextList();
+  showToast('Entry removed');
+}
+
+function saveContextEntry() {
+  const name = document.getElementById('contextName').value.trim();
+  const category = document.getElementById('contextCategory').value;
+  const details = document.getElementById('contextDetails').value.trim();
+
+  if (!name || !details) {
+    showToast('Please fill in name and details');
+    return;
+  }
+
+  if (editingId) {
+    const idx = contextEntries.findIndex(e => e.id === editingId);
+    if (idx !== -1) contextEntries[idx] = { ...contextEntries[idx], name, category, details };
+  } else {
+    contextEntries.push({ id: Date.now().toString(), name, category, details });
+  }
+
+  saveContext();
+  renderContextList();
+  closeContextModal();
+  showToast(editingId ? 'Entry updated' : 'Entry added');
+}
+
+// ─── MODES ────────────────────────────────────────────────────────────────
+function renderModes() {
+  const tabs = document.getElementById('modeTabs');
+  tabs.innerHTML = '';
+  MODES.forEach((mode, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mode-tab' + (i === currentMode ? ' active' : '');
+    btn.textContent = mode.label;
+    btn.onclick = () => switchMode(i);
+    tabs.appendChild(btn);
+  });
+}
+
+function switchMode(i) {
+  currentMode = i;
+  renderModes();
+  renderQuestions(i);
+  // Clear output
+  document.getElementById('outputEmpty').style.display = 'flex';
+  document.getElementById('outputContent').style.display = 'none';
+  document.getElementById('outputContent').innerHTML = '';
+  lastOutput = '';
+}
+
+function renderQuestions(modeIdx) {
+  const mode = MODES[modeIdx];
+  const panel = document.getElementById('questionsPanel');
+
+  // Build context checkboxes
+  const contextCheckboxes = contextEntries.length > 0
+    ? `<div class="context-include">
+        <span class="context-include-label">Include Context Entries</span>
+        <div class="context-checkbox-list" id="contextCheckboxes">
+          ${contextEntries.map(e => `
+            <label>
+              <input type="checkbox" value="${e.id}" checked>
+              <span class="context-tag tag-${e.category}" style="margin-right:4px;">${e.category.charAt(0).toUpperCase() + e.category.slice(1)}</span> ${escHtml(e.name)}
+            </label>
+          `).join('')}
+        </div>
+      </div>`
+    : '';
+
+  panel.innerHTML = `
+    <div class="mode-title">${mode.icon} ${mode.label}</div>
+    <p class="mode-desc">${mode.desc}</p>
+    <div class="divider"></div>
+    ${contextCheckboxes}
+    ${mode.fields.map(f => renderField(f)).join('')}
+    <button class="btn-brainstorm" onclick="runBrainstorm()" id="brainstormBtn">
+      ✦ Invoke Brainstorm
+    </button>
+  `;
+}
+
+function renderField(f) {
+  const optional = f.optional ? ' <em style="font-size:10px;color:var(--ash);font-family:\'IM Fell English\',serif;">(optional)</em>' : '';
+  let input = '';
+  if (f.type === 'textarea') {
+    input = `<textarea id="field_${f.id}" placeholder="${f.hint || ''}"></textarea>`;
+  } else if (f.type === 'select') {
+    input = `<select id="field_${f.id}">${f.options.map(o => `<option>${o}</option>`).join('')}</select>`;
+  } else {
+    input = `<input type="text" id="field_${f.id}" placeholder="${f.hint || ''}">`;
+  }
+  return `
+    <div class="field-group">
+      <label class="field-label">${f.label}${optional}</label>
+      ${f.hint && f.type !== 'select' && f.type !== 'text' ? `<span class="field-hint">${f.hint}</span>` : ''}
+      ${input}
+    </div>
+  `;
+}
+
+// ─── CODEX FETCH ──────────────────────────────────────────────────────────
+let codexCache = null;
+let codexFetchedAt = 0;
+
+async function fetchCodexData() {
+  // Cache for 5 minutes
+  if (codexCache && Date.now() - codexFetchedAt < 300000) return codexCache;
+  try {
+    const res = await fetch('https://kylelord88.github.io/thewitherwild/', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const html = await res.text();
+    // Extract text content from the page
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    // Remove scripts/styles for clean text
+    doc.querySelectorAll('script, style, nav, footer').forEach(el => el.remove());
+    const text = doc.body ? doc.body.innerText : '';
+    if (text.length > 200) {
+      codexCache = text.substring(0, 6000); // cap to avoid token overflow
+      codexFetchedAt = Date.now();
+      return codexCache;
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ─── BRAINSTORM ────────────────────────────────────────────────────────────
+async function runBrainstorm() {
+  if (isLoading) return;
+  const mode = MODES[currentMode];
+
+  // Collect fields
+  const fields = {};
+  mode.fields.forEach(f => {
+    const el = document.getElementById(`field_${f.id}`);
+    if (el) fields[f.id] = el.value.trim();
+  });
+
+  // Collect selected context
+  const checkedBoxes = document.querySelectorAll('#contextCheckboxes input:checked');
+  const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+  const selectedContext = contextEntries
+    .filter(e => selectedIds.includes(e.id))
+    .map(e => `[${e.category.toUpperCase()}] ${e.name}:\n${e.details}`)
+    .join('\n\n');
+
+  isLoading = true;
+  document.getElementById('brainstormBtn').disabled = true;
+  document.getElementById('outputEmpty').style.display = 'none';
+  document.getElementById('outputContent').style.display = 'block';
+
+  const outputContent = document.getElementById('outputContent');
+  outputContent.innerHTML = `<div class="loading-shimmer">
+    <div class="shimmer-line header"></div>
+    <div class="shimmer-line full"></div>
+    <div class="shimmer-line medium"></div>
+    <div class="shimmer-line full"></div>
+    <div class="shimmer-line short"></div>
+    <div class="shimmer-line header" style="margin-top:16px;"></div>
+    <div class="shimmer-line full"></div>
+    <div class="shimmer-line full"></div>
+    <div class="shimmer-line medium"></div>
+    <div class="shimmer-line header" style="margin-top:16px;"></div>
+    <div class="shimmer-line full"></div>
+    <div class="shimmer-line short"></div>
+  </div>`;
+
+  // Try to fetch live Codex data (prioritized over context entries if conflict)
+  const codexData = await fetchCodexData();
+  const codexSection = codexData
+    ? `\nLIVE CAMPAIGN CODEX DATA (from kylelord88.github.io/thewitherwild — treat as AUTHORITATIVE, override context library entries if there is any contradiction):\n${codexData}\n`
+    : '';
+
+  const prompt = mode.prompt(fields, selectedContext, codexSection);
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    lastOutput = text;
+    outputContent.innerHTML = markdownToHtml(text);
+    document.getElementById('outputScroll').scrollTop = 0;
+  } catch(e) {
+    outputContent.innerHTML = `<p style="color:var(--rust-light);">Something went wrong invoking the brainstorm. Check your connection and try again.</p>`;
+  }
+
+  isLoading = false;
+  document.getElementById('brainstormBtn').disabled = false;
+}
+
+// ─── MARKDOWN → HTML ──────────────────────────────────────────────────────
+function markdownToHtml(text) {
+  return text
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hup])/gm, '')
+    .split('\n').map(line => {
+      if (!line.match(/^<[hup2-6li]/)) return line ? `<p>${line}</p>` : '';
+      return line;
+    }).join('')
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<[hul])/g, '$1')
+    .replace(/(<\/[hul][^>]*>)<\/p>/g, '$1');
+}
+
+// ─── COPY ─────────────────────────────────────────────────────────────────
+function copyOutput() {
+  if (!lastOutput) { showToast('Nothing to copy yet'); return; }
+  navigator.clipboard.writeText(lastOutput).then(() => showToast('Copied to clipboard'));
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Close modal on overlay click
+document.getElementById('contextModal').addEventListener('click', function(e) {
+  if (e.target === this) closeContextModal();
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeContextModal();
+});
+
+init();
+</script>
+</body>
+</html>
