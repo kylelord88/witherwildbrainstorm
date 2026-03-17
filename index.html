@@ -529,15 +529,17 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: #fff;
   }
 
   .output-toolbar {
     padding: 12px 20px;
-    border-bottom: 1px solid rgba(200, 150, 42, 0.1);
+    border-bottom: 1px solid #e0d8cc;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
+    background: #f7f3ec;
   }
 
   .output-toolbar-label {
@@ -545,13 +547,13 @@
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--ash);
+    color: #7a6a58;
   }
 
   .btn-copy {
     background: transparent;
-    border: 1px solid rgba(200, 150, 42, 0.25);
-    color: var(--ash-light);
+    border: 1px solid #c8a84a;
+    color: #7a6a58;
     font-family: 'Cinzel', serif;
     font-size: 10px;
     letter-spacing: 0.1em;
@@ -561,19 +563,20 @@
     transition: all 0.2s;
   }
 
-  .btn-copy:hover { border-color: rgba(200, 150, 42, 0.5); color: var(--gold-light); }
+  .btn-copy:hover { border-color: #a07830; color: #a07830; background: rgba(200,150,42,0.06); }
 
   .output-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 28px;
+    padding: 28px 32px;
     scrollbar-width: thin;
-    scrollbar-color: var(--ash) transparent;
+    scrollbar-color: #c8b89a transparent;
+    background: #fff;
   }
 
   .output-scroll::-webkit-scrollbar { width: 4px; }
   .output-scroll::-webkit-scrollbar-track { background: transparent; }
-  .output-scroll::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 2px; }
+  .output-scroll::-webkit-scrollbar-thumb { background: #c8b89a; border-radius: 2px; }
 
   .output-empty {
     display: flex;
@@ -582,15 +585,13 @@
     justify-content: center;
     height: 100%;
     text-align: center;
-    color: var(--ash);
-    opacity: 0.6;
+    color: #b0a090;
   }
 
   .output-empty .sigil {
     font-size: 48px;
     margin-bottom: 16px;
-    filter: drop-shadow(0 0 12px rgba(200, 150, 42, 0.3));
-    opacity: 0.5;
+    opacity: 0.35;
   }
 
   .output-empty p {
@@ -599,49 +600,50 @@
     font-size: 15px;
     line-height: 1.6;
     max-width: 280px;
+    color: #b0a090;
   }
 
   .output-content {
     font-family: 'Crimson Pro', serif;
-    font-size: 16px;
-    color: var(--parchment);
-    line-height: 1.7;
+    font-size: 17px;
+    color: #2a2018;
+    line-height: 1.75;
   }
 
   .output-content h2 {
     font-family: 'Cinzel', serif;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--gold-light);
-    margin: 24px 0 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(200, 150, 42, 0.2);
+    color: #7a4a1a;
+    margin: 28px 0 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #e0d0b0;
   }
 
   .output-content h2:first-child { margin-top: 0; }
 
   .output-content h3 {
     font-family: 'Cinzel', serif;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    color: var(--ash-light);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #6a7a5a;
     text-transform: uppercase;
-    margin: 16px 0 6px;
+    margin: 18px 0 6px;
   }
 
-  .output-content p { margin-bottom: 10px; }
-  .output-content ul { padding-left: 20px; margin-bottom: 10px; }
-  .output-content li { margin-bottom: 4px; }
+  .output-content p { margin-bottom: 12px; color: #2a2018; }
+  .output-content ul { padding-left: 22px; margin-bottom: 12px; }
+  .output-content li { margin-bottom: 5px; color: #2a2018; }
 
   .output-content strong {
-    color: var(--gold-light);
+    color: #7a4a1a;
     font-weight: 600;
   }
 
   .output-content em {
     font-style: italic;
-    color: var(--parchment-dark);
+    color: #4a5a3a;
   }
 
   .loading-shimmer {
@@ -652,7 +654,7 @@
 
   .shimmer-line {
     height: 14px;
-    background: linear-gradient(90deg, rgba(200,150,42,0.05) 0%, rgba(200,150,42,0.12) 50%, rgba(200,150,42,0.05) 100%);
+    background: linear-gradient(90deg, #f0ebe3 0%, #e4ddd2 50%, #f0ebe3 100%);
     background-size: 200% 100%;
     animation: shimmer 1.8s infinite;
     border-radius: 2px;
