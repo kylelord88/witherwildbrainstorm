@@ -788,6 +788,65 @@
 
   .btn-secondary:hover { background: rgba(155, 139, 120, 0.08); color: var(--parchment); }
 
+  .header-spacer { flex: 1; }
+
+  .btn-api-key {
+    background: transparent;
+    border: 1px solid rgba(200, 150, 42, 0.3);
+    color: var(--ash-light);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    padding: 7px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-api-key:hover {
+    border-color: rgba(200, 150, 42, 0.6);
+    color: var(--gold-light);
+  }
+
+  .btn-api-key.key-set {
+    border-color: rgba(45, 74, 45, 0.6);
+    color: #80b080;
+  }
+
+  .api-key-hint {
+    font-size: 12px;
+    color: var(--ash);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .api-key-hint a { color: var(--gold); text-decoration: none; }
+  .api-key-hint a:hover { text-decoration: underline; }
+
+  .key-input-wrap { position: relative; }
+  .key-input-wrap input { padding-right: 70px; }
+
+  .btn-toggle-key {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--ash-light);
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  .btn-toggle-key:hover { color: var(--parchment); }
+
   .toast {
     position: fixed;
     bottom: 24px;
@@ -822,6 +881,10 @@
       <h1>The Witherwild</h1>
       <p>GM Brainstorm Codex · Fanewick Campaign</p>
     </div>
+    <div class="header-spacer"></div>
+    <button class="btn-api-key" id="btnApiKey" onclick="openApiKeyModal()">
+      <span id="apiKeyStatus">⚷ Set API Key</span>
+    </button>
   </header>
 
   <div class="main-layout">
@@ -915,10 +978,107 @@
   </div>
 </div>
 
+<!-- API Key Modal -->
+<div class="modal-overlay" id="apiKeyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Anthropic API Key</h3>
+      <button class="btn-modal-close" onclick="closeApiKeyModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="api-key-hint">
+        This app calls the Anthropic API directly from your browser. You need an API key from
+        <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.
+        Your key is stored only in your browser's localStorage and never sent anywhere except Anthropic.
+      </p>
+      <div class="field-group">
+        <label class="field-label">API Key</label>
+        <div class="key-input-wrap">
+          <input type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off">
+          <button class="btn-toggle-key" onclick="toggleKeyVisibility()">Show</button>
+        </div>
+      </div>
+      <div id="apiKeyError" style="color:var(--rust-light);font-size:12px;margin-top:6px;display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="clearApiKey()">Clear Key</button>
+      <button class="btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
+const API_KEY_STORAGE = 'witherwild_apikey';
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_STORAGE) || '';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const errEl = document.getElementById('apiKeyError');
+  if (!key.startsWith('sk-ant-')) {
+    errEl.textContent = 'Key should start with sk-ant- — double-check you copied it correctly.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  localStorage.setItem(API_KEY_STORAGE, key);
+  updateApiKeyButton();
+  closeApiKeyModal();
+  showToast('API key saved');
+}
+
+function clearApiKey() {
+  localStorage.removeItem(API_KEY_STORAGE);
+  document.getElementById('apiKeyInput').value = '';
+  updateApiKeyButton();
+  closeApiKeyModal();
+  showToast('API key cleared');
+}
+
+function updateApiKeyButton() {
+  const btn = document.getElementById('btnApiKey');
+  const status = document.getElementById('apiKeyStatus');
+  if (getApiKey()) {
+    btn.classList.add('key-set');
+    status.textContent = '⚷ API Key Set';
+  } else {
+    btn.classList.remove('key-set');
+    status.textContent = '⚷ Set API Key';
+  }
+}
+
+function openApiKeyModal() {
+  const modal = document.getElementById('apiKeyModal');
+  const existing = getApiKey();
+  document.getElementById('apiKeyInput').value = existing;
+  document.getElementById('apiKeyError').style.display = 'none';
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 200);
+}
+
+function closeApiKeyModal() {
+  document.getElementById('apiKeyModal').classList.remove('open');
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById('apiKeyInput');
+  const btn = document.querySelector('.btn-toggle-key');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = 'Hide';
+  } else {
+    input.type = 'password';
+    btn.textContent = 'Show';
+  }
+}
+
+
 const STORAGE_KEY = 'witherwild_context_v1';
 let contextEntries = [];
 let editingId = null;
@@ -1199,6 +1359,7 @@ function init() {
   renderContextList();
   renderModes();
   renderQuestions(0);
+  updateApiKeyButton();
 }
 
 const SEED_VERSION = 3;
@@ -1496,9 +1657,22 @@ async function runBrainstorm() {
   const prompt = mode.prompt(fields, selectedContext, codexSection);
 
   try {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      outputContent.innerHTML = `<p style="color:var(--gold);">No API key set. Click <strong>⚷ Set API Key</strong> in the top-right corner to add your Anthropic API key.</p>`;
+      isLoading = false;
+      document.getElementById('brainstormBtn').disabled = false;
+      return;
+    }
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
@@ -1507,6 +1681,13 @@ async function runBrainstorm() {
     });
 
     const data = await response.json();
+    if (!response.ok) {
+      const msg = data?.error?.message || `API error ${response.status}`;
+      outputContent.innerHTML = `<p style="color:var(--rust-light);">${escHtml(msg)}</p>`;
+      isLoading = false;
+      document.getElementById('brainstormBtn').disabled = false;
+      return;
+    }
     const text = data.content?.map(b => b.text || '').join('') || '';
     lastOutput = text;
     outputContent.innerHTML = markdownToHtml(text);
@@ -1560,6 +1741,9 @@ function showToast(msg) {
 // Close modal on overlay click
 document.getElementById('contextModal').addEventListener('click', function(e) {
   if (e.target === this) closeContextModal();
+});
+document.getElementById('apiKeyModal').addEventListener('click', function(e) {
+  if (e.target === this) closeApiKeyModal();
 });
 
 // Keyboard shortcut
