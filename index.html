@@ -533,7 +533,7 @@
   }
 
   .output-toolbar {
-    padding: 12px 20px;
+    padding: 0 16px 0 0;
     border-bottom: 1px solid #e0d8cc;
     display: flex;
     align-items: center;
@@ -541,6 +541,67 @@
     flex-shrink: 0;
     background: #f7f3ec;
   }
+
+  .output-tabs {
+    display: flex;
+    gap: 0;
+  }
+
+  .output-tab {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #9a8a78;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    bottom: -1px;
+  }
+
+  .output-tab:hover { color: #5a4a38; }
+
+  .output-tab.active {
+    color: #7a4a1a;
+    border-bottom-color: #7a4a1a;
+    background: #fff;
+  }
+
+  .saved-count {
+    display: inline-block;
+    background: rgba(122, 74, 26, 0.15);
+    color: #7a4a1a;
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    margin-left: 4px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .output-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-save-output {
+    background: rgba(122, 74, 26, 0.08);
+    border: 1px solid rgba(122, 74, 26, 0.3);
+    color: #7a4a1a;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-save-output:hover { background: rgba(122, 74, 26, 0.15); border-color: rgba(122, 74, 26, 0.5); }
 
   .output-toolbar-label {
     font-family: 'Cinzel', serif;
@@ -645,6 +706,170 @@
     font-style: italic;
     color: #4a5a3a;
   }
+
+  .saved-panel {
+    flex: 1;
+    overflow-y: auto;
+    background: #fff;
+    scrollbar-width: thin;
+    scrollbar-color: #c8b89a transparent;
+  }
+
+  .saved-panel::-webkit-scrollbar { width: 4px; }
+  .saved-panel::-webkit-scrollbar-track { background: transparent; }
+  .saved-panel::-webkit-scrollbar-thumb { background: #c8b89a; border-radius: 2px; }
+
+  .saved-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+    text-align: center;
+    color: #b0a090;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 40px;
+  }
+
+  .saved-entry {
+    border-bottom: 1px solid #f0ebe3;
+    transition: background 0.15s;
+  }
+
+  .saved-entry:last-child { border-bottom: none; }
+
+  .saved-entry-header {
+    padding: 14px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+  }
+
+  .saved-entry-header:hover { background: #faf7f2; }
+
+  .saved-entry-meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .saved-entry-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #3a2a18;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .saved-entry-date {
+    font-family: 'Crimson Pro', serif;
+    font-size: 12px;
+    color: #9a8a78;
+  }
+
+  .saved-entry-mode-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(122, 74, 26, 0.1);
+    color: #7a4a1a;
+    border: 1px solid rgba(122, 74, 26, 0.2);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .saved-entry-chevron {
+    color: #c0b0a0;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: transform 0.2s;
+  }
+
+  .saved-entry.expanded .saved-entry-chevron { transform: rotate(90deg); }
+
+  .saved-entry-body {
+    display: none;
+    padding: 0 20px 16px;
+    border-top: 1px solid #f0ebe3;
+    background: #fdfcfa;
+  }
+
+  .saved-entry.expanded .saved-entry-body { display: block; }
+
+  .saved-entry-content {
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    color: #2a2018;
+    line-height: 1.7;
+    padding-top: 14px;
+  }
+
+  .saved-entry-content h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a4a1a;
+    margin: 20px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e8dfd0;
+  }
+
+  .saved-entry-content h2:first-child { margin-top: 0; }
+
+  .saved-entry-content h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #6a7a5a;
+    text-transform: uppercase;
+    margin: 14px 0 5px;
+  }
+
+  .saved-entry-content p { margin-bottom: 10px; }
+  .saved-entry-content ul { padding-left: 20px; margin-bottom: 10px; }
+  .saved-entry-content li { margin-bottom: 4px; }
+  .saved-entry-content strong { color: #7a4a1a; font-weight: 600; }
+  .saved-entry-content em { font-style: italic; color: #4a5a3a; }
+
+  .saved-entry-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f0ebe3;
+  }
+
+  .btn-saved-action {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .btn-saved-copy { color: #6a7a5a; border-color: rgba(106,122,90,0.35); }
+  .btn-saved-copy:hover { background: rgba(106,122,90,0.08); }
+  .btn-saved-delete { color: #9a4a3a; border-color: rgba(154,74,58,0.3); }
+  .btn-saved-delete:hover { background: rgba(154,74,58,0.08); }
+  .btn-saved-rename { color: #7a6a58; border-color: rgba(122,106,88,0.3); }
+  .btn-saved-rename:hover { background: rgba(122,106,88,0.08); }
 
   .loading-shimmer {
     display: flex;
@@ -928,15 +1153,30 @@
         <!-- Output Panel -->
         <div class="output-panel">
           <div class="output-toolbar">
-            <span class="output-toolbar-label">Brainstorm Output</span>
-            <button class="btn-copy" onclick="copyOutput()">Copy Text</button>
+            <div class="output-tabs">
+              <button class="output-tab active" id="tabBrainstorm" onclick="switchOutputTab('brainstorm')">Output</button>
+              <button class="output-tab" id="tabSaved" onclick="switchOutputTab('saved')">
+                Saved <span class="saved-count" id="savedCount"></span>
+              </button>
+            </div>
+            <div class="output-toolbar-actions">
+              <button class="btn-save-output" id="btnSaveOutput" onclick="saveCurrentOutput()" style="display:none;">Save Output</button>
+              <button class="btn-copy" onclick="copyOutput()">Copy</button>
+            </div>
           </div>
+
+          <!-- Brainstorm Output View -->
           <div class="output-scroll" id="outputScroll">
             <div class="output-empty" id="outputEmpty">
               <div class="sigil">✦</div>
               <p>Fill in the questions and invoke the brainstorm to conjure ideas for your campaign.</p>
             </div>
             <div class="output-content" id="outputContent" style="display:none;"></div>
+          </div>
+
+          <!-- Saved Outputs View -->
+          <div class="saved-panel" id="savedPanel" style="display:none;">
+            <div class="saved-list" id="savedList"></div>
           </div>
         </div>
       </div>
@@ -1082,6 +1322,9 @@ function toggleKeyVisibility() {
 
 
 const STORAGE_KEY = 'witherwild_context_v1';
+const SAVED_KEY = 'witherwild_saved_v1';
+let savedOutputs = [];
+let currentOutputTab = 'brainstorm';
 let contextEntries = [];
 let editingId = null;
 let currentMode = 0;
@@ -1357,11 +1600,13 @@ const SEED_ENTRIES = [
 
 function init() {
   loadContext();
+  loadSaved();
   seedDefaultEntries();
   renderContextList();
   renderModes();
   renderQuestions(0);
   updateApiKeyButton();
+  renderSavedCount();
 }
 
 const SEED_VERSION = 3;
@@ -1378,6 +1623,136 @@ function seedDefaultEntries() {
   });
   saveContext();
   localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
+}
+
+// ─── SAVED OUTPUTS ──────────────────────────────────────────────────────────
+function loadSaved() {
+  try {
+    const s = localStorage.getItem(SAVED_KEY);
+    if (s) savedOutputs = JSON.parse(s);
+  } catch(e) { savedOutputs = []; }
+}
+
+function persistSaved() {
+  try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedOutputs)); } catch(e) {}
+}
+
+function saveCurrentOutput() {
+  if (!lastOutput) { showToast('Nothing to save yet'); return; }
+  const mode = MODES[currentMode];
+  const now = new Date();
+  const label = `${mode.label} — ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  savedOutputs.unshift({
+    id: Date.now().toString(),
+    mode: mode.label,
+    label,
+    markdown: lastOutput,
+    createdAt: now.toISOString()
+  });
+  persistSaved();
+  renderSavedCount();
+  showToast('Output saved');
+}
+
+function deleteSaved(id) {
+  savedOutputs = savedOutputs.filter(s => s.id !== id);
+  persistSaved();
+  renderSavedList();
+  renderSavedCount();
+  showToast('Entry deleted');
+}
+
+function copySaved(id) {
+  const entry = savedOutputs.find(s => s.id === id);
+  if (!entry) return;
+  navigator.clipboard.writeText(entry.markdown).then(() => showToast('Copied to clipboard'));
+}
+
+function renameSaved(id) {
+  const entry = savedOutputs.find(s => s.id === id);
+  if (!entry) return;
+  const newName = prompt('Rename this output:', entry.label);
+  if (newName && newName.trim()) {
+    entry.label = newName.trim();
+    persistSaved();
+    renderSavedList();
+  }
+}
+
+function toggleSavedEntry(id) {
+  const el = document.querySelector(`.saved-entry[data-id="${id}"]`);
+  if (!el) return;
+  el.classList.toggle('expanded');
+}
+
+function renderSavedCount() {
+  const el = document.getElementById('savedCount');
+  if (savedOutputs.length > 0) {
+    el.textContent = savedOutputs.length;
+    el.style.display = 'inline-block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function renderSavedList() {
+  const list = document.getElementById('savedList');
+  if (savedOutputs.length === 0) {
+    list.innerHTML = '<div class="saved-empty">No saved outputs yet.<br>Invoke a brainstorm, then hit <strong>Save Output</strong> to keep it here.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  savedOutputs.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'saved-entry';
+    div.dataset.id = entry.id;
+    const dateStr = new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    div.innerHTML = `
+      <div class="saved-entry-header" onclick="toggleSavedEntry('${entry.id}')">
+        <div class="saved-entry-meta">
+          <div class="saved-entry-title">${escHtml(entry.label)}</div>
+          <div class="saved-entry-date">${dateStr}</div>
+        </div>
+        <span class="saved-entry-mode-tag">${escHtml(entry.mode)}</span>
+        <span class="saved-entry-chevron">›</span>
+      </div>
+      <div class="saved-entry-body">
+        <div class="saved-entry-content">${markdownToHtml(entry.markdown)}</div>
+        <div class="saved-entry-actions">
+          <button class="btn-saved-action btn-saved-copy" onclick="copySaved('${entry.id}')">Copy</button>
+          <button class="btn-saved-action btn-saved-rename" onclick="renameSaved('${entry.id}')">Rename</button>
+          <button class="btn-saved-action btn-saved-delete" onclick="deleteSaved('${entry.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function switchOutputTab(tab) {
+  currentOutputTab = tab;
+  const brainstormScroll = document.getElementById('outputScroll');
+  const savedPanelEl = document.getElementById('savedPanel');
+  const tabB = document.getElementById('tabBrainstorm');
+  const tabS = document.getElementById('tabSaved');
+
+  if (tab === 'brainstorm') {
+    brainstormScroll.style.display = 'flex';
+    savedPanelEl.style.display = 'none';
+    tabB.classList.add('active');
+    tabS.classList.remove('active');
+    document.getElementById('btnSaveOutput').style.display = lastOutput ? 'inline-block' : 'none';
+    document.querySelector('.btn-copy').style.display = 'inline-block';
+  } else {
+    brainstormScroll.style.display = 'none';
+    savedPanelEl.style.display = 'flex';
+    savedPanelEl.style.flexDirection = 'column';
+    tabB.classList.remove('active');
+    tabS.classList.add('active');
+    document.getElementById('btnSaveOutput').style.display = 'none';
+    document.querySelector('.btn-copy').style.display = 'none';
+    renderSavedList();
+  }
 }
 
 // ─── CONTEXT STORAGE ─────────────────────────────────────────────────────
@@ -1530,6 +1905,7 @@ function switchMode(i) {
   document.getElementById('outputEmpty').style.display = 'flex';
   document.getElementById('outputContent').style.display = 'none';
   document.getElementById('outputContent').innerHTML = '';
+  document.getElementById('btnSaveOutput').style.display = 'none';
   lastOutput = '';
 }
 
@@ -1694,6 +2070,7 @@ async function runBrainstorm() {
     lastOutput = text;
     outputContent.innerHTML = markdownToHtml(text);
     document.getElementById('outputScroll').scrollTop = 0;
+    document.getElementById('btnSaveOutput').style.display = 'inline-block';
   } catch(e) {
     outputContent.innerHTML = `<p style="color:var(--rust-light);">Something went wrong invoking the brainstorm. Check your connection and try again.</p>`;
   }
