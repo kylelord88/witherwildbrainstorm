@@ -2298,7 +2298,7 @@ async function runBrainstorm() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 4096,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -2467,7 +2467,7 @@ async function applyTweak() {
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: tweakConversation })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4096, messages: tweakConversation })
     });
 
     const data = await response.json();
